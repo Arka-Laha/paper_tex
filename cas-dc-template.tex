@@ -32,6 +32,8 @@
 \usepackage{booktabs}
 \usepackage{tikz}
 \usepackage{arydshln}
+\usepackage{stfloats}
+\usepackage[section]{placeins}
 
 %%%Author definitions
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -62,6 +64,8 @@
 \setcounter{bottomnumber}{5}
 \setcounter{totalnumber}{10}
 \setcounter{dbltopnumber}{5}
+\setlength{\dbltextfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
 
 % Short title
 \shorttitle{Brain Tumor Segmentation in 3D MRI}
@@ -198,7 +202,7 @@ Brain tumor \cite{deangelis2001brain} encompasses various abnormal growths calle
 
 The lack of standardization in the intensities of the MRI voxels further complicates the segmentation, as identical tumor tissues can present differently depending on the strength of the scanner and the acquisition settings. Consequently, automated annotation of volumetric MRI images has become an essential deep learning endeavor in supporting healthcare professionals to simplify and unify the process of labeling intricate 3D medical images for precise and consistent analysis. Conventional automatic brain tumor segmentation techniques rely predominantly on handcrafted feature engineering \cite{menze2014multimodal}, following a traditional machine learning framework where feature extraction and classifier training are performed independently. In contrast, deep neural networks enable end-to-end learning of hierarchical, task-specific feature representations directly from multimodal MRI data, facilitating more effective brain tumor segmentation \cite{bengio2013representation}. 
 
-Accurate and efficient brain tumor segmentation from multimodal MRI remains a challenge due to the substantial variability in tumor appearance, size, location, and morphology. Mohammad Havaei et al.~\cite{havaei2017brain} proposed a fully automatic deep convolutional neural network framework that integrates local and global contextual features, class-imbalance-aware training, and cascaded refinement to achieve competitive BraTS segmentation performance with reduced computational complexity and inference time. El-Sayed A et al.~\cite{el2014computer} proposed a hybrid machine learning framework that combines pulse-coupled neural network-based segmentation, wavelet feature extraction, principal component analysis, and neural network classification, achieving high accuracy in distinguishing normal and abnormal brain MRI scans while demonstrating robustness and computational efficiency. In addition, their comprehensive review of contemporary CAD-based brain MRI segmentation and classification techniques ~\cite{maitra2008hybrid, el2010hybrid, cheng2010automated, cherkassky2007learning} provided valuable insights into existing challenges and future research directions.  
+Accurate and efficient brain tumor segmentation from multimodal MRI remains a challenge due to the substantial variability in tumor appearance, size, location, and morphology. Mohammad Havaei et al.~\cite{havaei2017brain} proposed a fully automatic deep convolutional neural network framework that integrates local and global contextual features, class-imbalance-aware training, and cascaded refinement to achieve competitive BraTS segmentation performance with reduced computational complexity and inference time. El-Sayed A et al.~\cite{el2014computer} proposed a hybrid machine learning framework that combines pulse-coupled neural network-based segmentation, wavelet feature extraction, principal component analysis, and neural network classification, achieving high accuracy in distinguishing normal and abnormal brain MRI scans while demonstrating robustness and computational efficiency. In addition, their comprehensive review of contemporary CAD-based brain MRI segmentation and classification techniques \cite{maitra2008hybrid, el2010hybrid, cheng2010automated, cherkassky2007learning} provided valuable insights into existing challenges and future research directions.
 
 Despite the promising results reported by existing CAD systems and deep learning-based approaches, accurate segmentation of heterogeneous brain tumor subregions from volumetric MRI data remains a challenging problem. The limitations of handcrafted feature-based methods and the growing demand for exploiting three-dimensional spatial context have encouraged the development of 3D MRI segmentation frameworks capable of learning more discriminative tumor representations. Motivated by these observations, this work proposes a novel 3D deep learning-based brain tumor segmentation framework to improve segmentation accuracy and robustness while maintaining computational efficiency.
 
@@ -210,7 +214,12 @@ Brain MRI data are inherently volumetric, which makes the exploitation of three-
 \subsection{Contribution}
 
 \section{Our Proposal}
-\begin{figure*}[!tbp]
+In this work, we adopt a Three-Dimensional Convolutional Neural Network (3D-CNN) framework tailored for the segmentation of volumetric brain tumors. Unlike Two-Dimensional slice-based methods, our model operates directly on cropped volumes of size $128\times128\times128$, thus preserving the spatial context across all three dimensions. The network input consists of three MRI modalities: T1 contrast enhanced (T1ce), T2 and FLAIR stacked as channels, while the T1 modality is excluded to avoid redundancy, as T1ce provides most of the anatomical information available in T1 while additionally highlighting contrast-enhanced regions. Our Convolutional approach is built on the classical U-Net shape backbone where there is an encoder (contracting path) and a decoder (expanding path) connected through a bottleneck and skip connections(residual connections). But in our approach we replace the classical $3\times3\times3$ convolution used for the basic U-net with custom Dense Inception Residual Convolution (DRIC) blocks to capture multi-scale features and attention gates to selectively emphasize tumor regions during feature propagation through skip connections. Although computationally more demanding, 3D convolutions were adopted to preserve volumetric context rather than segmenting each 2D slice as in our literature review, which tends to capture more volumetric context. To address the high memory requirements of 3D volumetric images by cropping into the data and discarding the empty spaces present. Now, there are few major components that make up our approach in building this architecture.
+\section*{Part I: Module-Wise Architectural Description}
+\subsection{Dense Inception Residual Convolution (DRIC) Blocks}
+The first step in improving the classical U-Net architecture is to replace the $3\times3\times3$ convolution with something more modern that can capture both fine and coarse features in a single go. To address this limitation, inception-style parallel convolutions are employed, where parallel convolutional operations are performed using multiple sizes of kernels to extract feature on every scale. In our approach, we also added Dense and Residual Connections in the block so that feature preservation is improved during deep feature transformation. So, the fundamental feature extraction unit in our architecture combines three design principles: inception-style multi-branch convolution, dense connectivity, and residual learning, shown in Figure \ref{FIG:DRIC Block}.
+
+\begin{figure*}[!t]
     \centering
     \includegraphics[width=\textwidth]{figs/Abstract Graphical.png}
     \caption{Graphical illustration of the proposed framework.}
@@ -223,11 +232,11 @@ Brain MRI data are inherently volumetric, which makes the exploitation of three-
     
     % Main Figure
     \includegraphics[
-        height=0.1\textheight,
-        width=0.45\textwidth
+        height=0.085\textheight,
+        width=0.9\textwidth
     ]{figs/Dense Inception-Residual Block.png}
 
-    \vspace{2mm}
+    \vspace{1mm}
 
     % Dashed line settings
     \setlength{\dashlinedash}{0.5pt}
@@ -237,21 +246,21 @@ Brain MRI data are inherently volumetric, which makes the exploitation of three-
     \fbox{
     \begin{tabular}{cl|cl|cl}
 
-    \includegraphics[width=0.02\textwidth]{figs/Label1/1.png}
+    \includegraphics[width=0.018\textwidth]{figs/Label1/1.png}
     &
     \hspace{-1.3em}
     \scriptsize Concatenation
 
     &
     
-    \includegraphics[width=0.02\textwidth]{figs/Label1/6.png}
+    \includegraphics[width=0.018\textwidth]{figs/Label1/6.png}
     &
     \hspace{-1.3em}
     \scriptsize Dropout
 
     &
 
-    \includegraphics[width=0.02\textwidth]{figs/Label1/5.png}
+    \includegraphics[width=0.018\textwidth]{figs/Label1/5.png}
     &
     \hspace{-1.3em}
     \scriptsize Add
@@ -261,17 +270,28 @@ Brain MRI data are inherently volumetric, which makes the exploitation of three-
     \end{tabular}
     }
 
-    \caption{Dense Inception-Residual Block}
+    \captionof{figure}{Dense Inception-Residual Block}
     \label{FIG:DRIC Block}
+\end{minipage}
+\end{center}
 
-\end{figure}
+\subsubsection{Inception-style multi-branch convolution}
+Traditional convolutional layers use a single kernel size, which limits the receptive field per layer. Instead, the DRIC block applies multiple convolutional kernels of different sizes in parallel to capture features at different spatial scales. Formally, let the input tensor for the block be: $X\in H \times W \times D \times C_{in}$, where $H, W, D$ denote spatial dimensions, and $C_{in}$ is the number of input channels. Each branch applies a convolution with kernel size $\kappa\in 1,3,5:$ 
+$F_k = \sigma(\mathcal W_k * X + b_k ), k\in 1,3,5,$ where * denotes 3D convolution, $\mathcal W_k$ and $b_k$ are trainable weights and biases, and $\sigma(\cdot)$ is a non-linear activation function (ReLU in our implementation).
+The multi-branch outputs are concatenated channel-wise: $F_{concat} =[F_1 \| F_3 \| F_5 ],$ yielding a feature tensor enriched with both local fine details ($1\times 1\times 1$ and $3\times 3\times 3$) and broader contextual information ($5\times 5\times 5$).
+
+\subsubsection{Dense connectivity}
+To encourage feature reuse and strengthen gradient flow, the DRIC block incorporates dense connections. Instead of passing only the output of the previous block, the concatenation includes the input feature maps: $F_{dense} =[X \| F_{concat}]$. This ensures that each layer has direct access to all preceding feature maps, reducing redundancy, and improving parameter efficiency.
+
+\subsubsection{Residual learning}
+Direct stacking of inception-dense modules may increase feature dimensionality excessively, leading to optimization difficulties. To address this, the DRIC block applies a residual connection to stabilize training. A $1\times 1\times 1$ convolution is used to match the dimensions between the input and output before addition: $F_{res} =\sigma (\mathcal W_{res} * X + b_{res})$. Finally, the output of the DRIC block is: $Y = F_{dense} +F_{res}$. This residual formulation mitigates vanishing gradients and accelerates convergence by allowing the block to learn perturbations over the identity mapping rather than the full transformation. 
 
 \subsection{Multi-Scale Input Strategy}
 To enhance contextual understanding of tumors with highly variable size and appearance, our network incorporates a multi-scale input strategy shown in Figure \ref{FIG:Multi-Scale Input}. Instead of relying only on the hierarchical down-sampling of the encoder, we explicitly inject down-sampled versions of the input volume into the corresponding encoder stages. 
 Let the input be $X_0\in \mathbb{R}^{(128\times 128\times 128\times C)}, C=3,$ where $C$ is the number of MRI modalities (T1ce, T2, FLAIR). Scaled versions are obtained by applying a down-sampling operator $S_\kappa (\cdot): X_0^{(i)}=S_{2^{(i-1)}}(X_0), i=1,\cdots, 4,$ producing inputs at resolutions $128^3, 64^3, 32^3,$ and $16^3$. Each $X_0^{(i)}$ is passed through a shallow convolutional stem to produce features $F_0^{(i)},$ that are concatenated with encoder features $F_{l} $ at the corresponding stage $Z_{l} =Concat(F_{l} ,F_0^{(i)})$.
 This design ensures that fine-scale structures ($e_\cdot g_\cdot$ enhancing tumor cores) are reinforced by high-resolution features, while large-scale abnormalities ($e_\cdot g_\cdot$ edema) benefit from the coarse global context. Empirically, the multi-scale input improved boundary precision and reduced false positives compared to encoder-only baselines.
 
-\begin{figure}[h!]
+\begin{center}
     \centering
     
     % Main Figure
@@ -319,10 +339,10 @@ This design ensures that fine-scale structures ($e_\cdot g_\cdot$ enhancing tumo
     \end{tabular}
     }
 
-    \caption{Multi-Scale Input Strategy}
+    \captionof{figure}{Multi-Scale Input Strategy}
     \label{FIG:Multi-Scale Input}
 
-\end{figure}
+\end{center}
 
 
 \subsection{Encoder (Contracting Path)}
@@ -331,7 +351,7 @@ Let the network input be: $X\in \mathbb{R}^{(H\times W\times D\times C_0)},$ whe
 After feature extraction, spatial resolution is reduced by applying 3D max pooling with stride 2:   $X_l=MaxPool3D(F_{l,p=2}),$ where $p$ is the size of pooling window. This leads to a twofold reduction in spatial dimensions: $H_l=\tfrac{H_{l-1}}{2}, W_l=\tfrac{W_{l-1}}{2}, D_l=\tfrac{D_{l-1}}{2}$. Thus, the encoder creates progressively deeper representations while shrinking the spatial extent. 
 The encoder is composed of L-stages, each consisting of one DRIC block followed by down-sampling. In practice, $L=4$. The recursive formulation is: $X_l=MaxPool3D(DRIC_l (X_{l-1})), l=1,\cdots,L$.
 At the end of the encoder, we obtain a multi-resolution feature pyramid: $F=\{F_1,F_2,\cdots,F_L\},$ where $F_l$ represents features at stage $l$ before pooling. These tensors are later forwarded to the decoder through skip connections.
-\begin{figure}[h!]
+\begin{center}
     \centering
     
     % Main Figure
@@ -387,10 +407,10 @@ At the end of the encoder, we obtain a multi-resolution feature pyramid: $F=\{F_
     \end{tabular}
     }
 
-    \caption{Encoder Path}
+    \captionof{figure}{Encoder Path}
     \label{FIG:Contracting Path}
 
-\end{figure}
+\end{center}
 
 
 
@@ -404,7 +424,7 @@ The recursive formulation of the decoder is thus: $X_l= DRIC_l (Concat(ConvTrans
 At the final stage, the reconstructed feature map has the same resolution as the input volume. A $1\times 1\times 1$ convolution followed by a voxel-wise softmax projects it to class probabilities: $\hat{Y} = Softmax(W_0 * X_1 + b_0), \hat{Y} \in \mathbb{R}^{H\times W\times D\times K},$ where $K$ is the number of segmentation classes. Each voxel $(i,j,k)$ is assigned a label by: $\hat{y}_{(i,j,k)} = \arg\max \hat{Y}^{(c)}_{(i,j,k)}$.
 Thus, the decoder path progressively restores spatial detail while leveraging both encoder information (via attention-gated skip connections) and multi-scale feature extraction (via DRIC refinement).
 
-\begin{figure}[h!]
+\begin{center}
     \centering
     
     % Main Figure
@@ -460,22 +480,22 @@ Thus, the decoder path progressively restores spatial detail while leveraging bo
     \end{tabular}
     }
 
-    \caption{Decoder Path}
+    \captionof{figure}{Decoder Path}
     \label{FIG:Expanding Path}
 
-\end{figure}
+\end{center}
 
 
 \subsection{Skip Connections, Attention Gates and Bottlenecks}
 The skip connections in our architecture, in Figure \ref{FIG:Attention gates over skip connections}, follow the classical U-Net design principle, in which feature maps from the encoder stages are directly forwarded to their corresponding decoder stages. This mechanism ensures that high-resolution spatial features suppressed by down-sampling are preserved and reintegrated during up-sampling, thereby enhancing localization accuracy. Formally, let $F_l\in \mathbb{R}^{H_l\times W_l\times D_l\times C_l}$ denote the feature map at encoder stage $l$; the skip connection then transmits $F_l$ to the decoder stage with the corresponding resolution.
 However, instead of transmitting the encoder features unfiltered, our model incorporates Attention Gates (AGs) to refine the skip connections. These gates are designed to suppress irrelevant activations (e.g., healthy tissue) while amplifying responses from salient tumor regions. Mathematically, each gate computes an attention coefficient for every spatial position $(i,j,k)$ in the feature tensor, based on both the encoder feature $F_l$ and a gating signal $G$ from deeper layers: $\alpha =\sigma (W_\alpha^T (\psi_F * F_l + \psi_G * G + b)),$ where * denotes convolution, $\psi_F$ and $\psi_G$ are learnable transformations of the encoder and gating signals, respectively, and $\sigma(\cdot)$ is the sigmoid activation ensuring values between 0 and 1. The attended feature map is then given by: $\Tilde{F}_l = \alpha \odot F_l,$ where $\odot$ denotes element-wise multiplication. This selective mechanism allows the network to dynamically highlight tumor-relevant regions while reducing background noise.
 At the bottleneck stage, the network processes the lowest-resolution feature map, where the receptive field is maximized, and semantic abstraction is strongest. The bottleneck consists of stacked DRIC blocks operating on $F_L$ , the deepest encoder feature, thereby enabling multi-scale contextual aggregation before the decoder begins reconstruction. Unlike the encoder or decoder stages, no pooling or up-sampling is applied here; instead, the bottleneck provides a dense representation that captures global tumor context across the entire 3D patch.
-\begin{figure}[h!]
+\begin{center}
 	\centering
 		\includegraphics[height=0.17\textheight, width=0.4\textwidth]{figs/Attention gates over skip connections.png}
-	\caption{Skip Connections, Attention Gates and Bottlenecks}
+	\captionof{figure}{Skip Connections, Attention Gates and Bottlenecks}
 	\label{FIG:Attention gates over skip connections}
-\end{figure}
+\end{center}
 
 \section*{Part II: Comprehensive Architecture of the Proposed Framework}
 The dataflow in the architecture follows a structured top-down and bottom-up autoencoder progression, enabling hierarchical feature extraction, contextual integration, and precise voxel-wise reconstruction. The input data is fed to the encoder side and the segmented output is received from the decoder side.
@@ -486,7 +506,7 @@ The raw input data (.nii files) are passed through a custom data generator that 
 Each subject is represented as a pre-aligned multi-modal MRI volume:
 $X_0 = \{X^{(1)} X^{(2)} X^{(3)} X^{(4)}\} - \{X^{(1)}\}\in \mathbb{R}^{(H\times W\times D\times 3)}$, where $X^{(1)}, X^{(2)}, X^{(3)}, X^{(4)}$ correspond to the T1, T1ce, T2, and FLAIR modalities respectively, and $H = W = D = 128$. Before entering the network, each modality is min-max normalized independently to [0, 1]. The three channels are stacked to form the initial 3D input tensor in the form of a NumPy array converted from the .nii file format. The height, width, and depth of 128 is achieved by hard cropping into the middle of the middle where most of the data resides, discarding the empty space outside the relevant brain area.  
 
-\begin{figure*}[t]
+\begin{figure*}[!tbp]
     \centering
     \includegraphics[width=\textwidth]{figs/Overall Architecture.png}
     \caption{Integrated Architectural Framework}
@@ -601,7 +621,7 @@ This adaptive scheme enables a balanced optimization process, starting with robu
 \subsubsection{Data Pre-processing and Training}
 For Training we have used the Data from the popular BraTS Dataset, modifying it slightly to our convenience. In the BraTS Dataset, each image consists of four modalities. These modalities are essentially different representations of the same brain image but containing different types of information as they are captured through different criterion. These modalities are called T1, T1CE(T1 Contrast Enhanced), T2, and Flair. All the modalities for each date are present in the dataset in the form of .nii flies, along with the ground-truth mask which is also present in .nii file format. For processing this data prior to training we excluded the T1 modality, as T1CE is just the contrast enhanced version of T1, as it contains most of the information present in T1 while additionally providing contrast-enhanced information due to it being contrast enhanced. This means we can reduce 25\% size for each data while loosing little to no useful information. For the remaining 3 modalities(T1CE, T2 and Flair) we first cropped each modality from a size of $240\times240\times155$ to $128\times128\times128$. Now theoretically this may also lead to loosing so essential information from the data. However, even after hard cropping, we still retain almost all the image information. This is shown in Fig.~\ref{fig:wide}
 
-\begin{figure*}[t]
+\begin{figure*}[!tbp]
 \centering
 
 \begin{subfigure}[b]{0.48\textwidth}
@@ -677,7 +697,7 @@ The results in Table~\ref{tbl1} show balanced and strong performance across tumo
 
 The graphical representations corresponding to each result are provided in Figure~\ref{fig:5x2_graphs} for clarity.
 
-\begin{figure*}[t]
+\begin{figure*}[!tbp]
 \centering
 \begin{tabular}{ccc}
 
@@ -713,7 +733,7 @@ The graphical representations corresponding to each result are provided in Figur
 
 
 For qualitative assessment, representative segmentation results generated by the final trained model are presented in Figure~\ref{fig:5x2_graphs1}.
-\begin{figure*}[t]
+\begin{figure*}[!tbp]
 \centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
@@ -742,7 +762,7 @@ Example 7 & Example 8 & Example 9\\
 
 \subsection{Robustness}
 The proposed model is evaluated against other popular network architectures to assess its performance. The comparative results, in Table \ref{tab:brats_comparison}, demonstrate the effectiveness and robustness of the proposed method.
-\begin{table*}[t]
+\begin{table*}[!tbp]
 \centering
 \caption{Comparison of Dice scores on BraTS benchmark datasets.}
 \label{tab:brats_comparison}
@@ -768,7 +788,7 @@ On validation, our model ranks among top performers for TC and ET, with Dice sco
 
 \subsection{Computational Complexity}
 One notable advantage of the proposed model is its computational efficiency is that it being light-weight. When we compare the parameter count of our model with others we observe the following in Table \ref{tab:parameter_comparison}.
-\begin{table*}[t]
+\begin{table*}[!tbp]
 \centering
 \caption{Comparison of total trainable parameters across recent 3D segmentation models.}
 \label{tab:parameter_comparison}
@@ -792,7 +812,7 @@ UNETR (2021) & 102.50 & ViT-based encoder \\
 As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (61.98M) and UNETR (102.5M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
 
 The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others we get the following in Table \ref{tab:complexity}.
-\begin{table*}[t]
+\begin{table*}[!tbp]
 \centering
 \caption{Comparison of model complexity in terms of trainable parameters and FLOPs.}
 \label{tab:complexity}
@@ -1064,4 +1084,3 @@ Debotosh Bhattacharjee, a full professor in the Department of Computer Science a
 \endbio
 
 \end{document}
-
