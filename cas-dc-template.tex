@@ -52,8 +52,16 @@
 
 \begin{document}
 \let\WriteBookmarks\relax
-\def\floatpagepagefraction{1}
-\def\textpagefraction{.001}
+\renewcommand{\topfraction}{.95}
+\renewcommand{\bottomfraction}{.85}
+\renewcommand{\textfraction}{.05}
+\renewcommand{\floatpagefraction}{.8}
+\renewcommand{\dbltopfraction}{.95}
+\renewcommand{\dblfloatpagefraction}{.8}
+\setcounter{topnumber}{5}
+\setcounter{bottomnumber}{5}
+\setcounter{totalnumber}{10}
+\setcounter{dbltopnumber}{5}
 
 % Short title
 \shorttitle{Brain Tumor Segmentation in 3D MRI}
@@ -202,29 +210,15 @@ Brain MRI data are inherently volumetric, which makes the exploitation of three-
 \subsection{Contribution}
 
 \section{Our Proposal}
-\begin{figure*}[t]
+\begin{figure*}[!tbp]
     \centering
     \includegraphics[width=\textwidth]{figs/Abstract Graphical.png}
     \caption{Graphical illustration of the proposed framework.}
     \label{fig:graphical_abstract}
 \end{figure*}
-In this work, we adopt a Three-Dimensional Convolutional Neural Network (3D-CNN) framework tailored for the segmentation of volumetric brain tumors. Unlike Two-Dimensional slice-based methods, our model operates directly on cropped volumes of size $128\times128\times128$, thus preserving the spatial context across all three dimensions. The network input consists of three MRI modalities: T1 contrast enhanced (T1ce), T2 and FLAIR stacked as channels, while the T1 modality is excluded to avoid redundancy, as T1ce provides most of the anatomical information available in T1 while additionally highlighting contrast-enhanced regions. Our Convolutional approach is built on the classical U-Net shape backbone where there is an encoder (contracting path) and a decoder (expanding path) connected through a bottleneck and skip connections(residual connections). But in our approach we replace the classical $3\times3\times3$ convolution used for the basic U-net with custom Dense Inception Residual Convolution (DRIC) blocks to capture multi-scale features and attention gates to selectively emphasize tumor regions during feature propagation through skip connections. Although computationally more demanding, 3D convolutions were adopted to preserve volumetric context rather than segmenting each 2D slice as in our literature review, which tends to capture more volumetric context. To address the high memory requirements of 3D volumetric images by cropping into the data and discarding the empty spaces present. Now, there are few major components that make up our approach in building this architecture.
-\section*{Part I: Module-Wise Architectural Description}
-\subsection{Dense Inception Residual Convolution (DRIC) Blocks}
-The first step in improving the classical U-Net architecture is to replace the $3\times3\times3$ convolution with something more modern that can capture both fine and coarse features in a single go. To address this limitation, inception-style parallel convolutions are employed, where parallel convolutional operations are performed using multiple sizes of kernels to extract feature on every scale. In our approach, we also added Dense and Residual Connections in the block so that feature preservation is improved during deep feature transformation. So, the fundamental feature extraction unit in our architecture combines three design principles: inception-style multi-branch convolution, dense connectivity, and residual learning, shown in Figure \ref{FIG:DRIC Block}.
 
-\subsubsection{Inception-style multi-branch convolution}
-Traditional convolutional layers use a single kernel size, which limits the receptive field per layer. Instead, the DRIC block applies multiple convolutional kernels of different sizes in parallel to capture features at different spatial scales. Formally, let the input tensor for the block be: $X\in H \times W \times D \times C_{in}$, where $H, W, D$ denote spatial dimensions, and $C_{in}$ is the number of input channels. Each branch applies a convolution with kernel size $\kappa\in 1,3,5:$ 
-$F_k = \sigma(\mathcal W_k * X + b_k ), k\in 1,3,5,$ where * denotes 3D convolution, $\mathcal W_k$ and $b_k$ are trainable weights and biases, and $\sigma(\cdot)$ is a non-linear activation function (ReLU in our implementation).
-The multi-branch outputs are concatenated channel-wise: $F_{concat} =[F_1 \| F_3 \| F_5 ],$ yielding a feature tensor enriched with both local fine details ($1\times 1\times 1$ and $3\times 3\times 3$) and broader contextual information ($5\times 5\times 5$).
-
-\subsubsection{Dense connectivity}
-To encourage feature reuse and strengthen gradient flow, the DRIC block incorporates dense connections. Instead of passing only the output of the previous block, the concatenation includes the input feature maps: $F_{dense} =[X \| F_{concat}]$. This ensures that each layer has direct access to all preceding feature maps, reducing redundancy, and improving parameter efficiency.
-
-\subsubsection{Residual learning}
-Direct stacking of inception-dense modules may increase feature dimensionality excessively, leading to optimization difficulties. To address this, the DRIC block applies a residual connection to stabilize training. A $1\times 1\times 1$ convolution is used to match the dimensions between the input and output before addition: $F_{res} =\sigma (\mathcal W_{res} * X + b_{res})$. Finally, the output of the DRIC block is: $Y = F_{dense} +F_{res}$. This residual formulation mitigates vanishing gradients and accelerates convergence by allowing the block to learn perturbations over the identity mapping rather than the full transformation. 
-
-\begin{figure}[h!]
+\begin{center}
+\begin{minipage}{\columnwidth}
     \centering
     
     % Main Figure
