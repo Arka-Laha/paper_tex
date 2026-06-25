@@ -8,3 +8,5 @@
 *.synctex.gz
 
 cas-dc-template.pdf
+
+*.abs
