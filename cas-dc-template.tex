@@ -293,7 +293,7 @@ This design ensures that fine-scale structures ($e_\cdot g_\cdot$ enhancing tumo
 
 \begin{center}
     \centering
-    
+
     % Main Figure
     \includegraphics[
         height=0.22\textheight,
@@ -315,7 +315,7 @@ This design ensures that fine-scale structures ($e_\cdot g_\cdot$ enhancing tumo
     \scriptsize Concatenation
 
     &
-    
+
     \includegraphics[width=0.032\textwidth]{figs/Label1/2.png}
     &
     \scriptsize Average-pooled by factor of $n$
@@ -329,7 +329,7 @@ This design ensures that fine-scale structures ($e_\cdot g_\cdot$ enhancing tumo
     \scriptsize Dimension
 
     &
-    
+
     \includegraphics[width=0.030\textwidth]{figs/Label1/4.png}
     &
     \scriptsize Number of channels
@@ -353,7 +353,7 @@ The encoder is composed of L-stages, each consisting of one DRIC block followed 
 At the end of the encoder, we obtain a multi-resolution feature pyramid: $F=\{F_1,F_2,\cdots,F_L\},$ where $F_l$ represents features at stage $l$ before pooling. These tensors are later forwarded to the decoder through skip connections.
 \begin{center}
     \centering
-    
+
     % Main Figure
     \includegraphics[
         height=0.22\textheight,
@@ -375,7 +375,7 @@ At the end of the encoder, we obtain a multi-resolution feature pyramid: $F=\{F_
     \scriptsize Concatenation
 
     &
-    
+
     \includegraphics[width=0.015\textwidth]{figs/Label1/9.png}
     &
     \scriptsize MaxPool
@@ -389,11 +389,11 @@ At the end of the encoder, we obtain a multi-resolution feature pyramid: $F=\{F_
     \scriptsize Dimension
 
     &
-    
+
     \includegraphics[width=0.030\textwidth]{figs/Label1/4.png}
     &
     \scriptsize Number of channels
-    
+
      \\[1.5mm]
 
     \hdashline
@@ -491,10 +491,72 @@ The skip connections in our architecture, in Figure \ref{FIG:Attention gates ove
 However, instead of transmitting the encoder features unfiltered, our model incorporates Attention Gates (AGs) to refine the skip connections. These gates are designed to suppress irrelevant activations (e.g., healthy tissue) while amplifying responses from salient tumor regions. Mathematically, each gate computes an attention coefficient for every spatial position $(i,j,k)$ in the feature tensor, based on both the encoder feature $F_l$ and a gating signal $G$ from deeper layers: $\alpha =\sigma (W_\alpha^T (\psi_F * F_l + \psi_G * G + b)),$ where * denotes convolution, $\psi_F$ and $\psi_G$ are learnable transformations of the encoder and gating signals, respectively, and $\sigma(\cdot)$ is the sigmoid activation ensuring values between 0 and 1. The attended feature map is then given by: $\Tilde{F}_l = \alpha \odot F_l,$ where $\odot$ denotes element-wise multiplication. This selective mechanism allows the network to dynamically highlight tumor-relevant regions while reducing background noise.
 At the bottleneck stage, the network processes the lowest-resolution feature map, where the receptive field is maximized, and semantic abstraction is strongest. The bottleneck consists of stacked DRIC blocks operating on $F_L$ , the deepest encoder feature, thereby enabling multi-scale contextual aggregation before the decoder begins reconstruction. Unlike the encoder or decoder stages, no pooling or up-sampling is applied here; instead, the bottleneck provides a dense representation that captures global tumor context across the entire 3D patch.
 \begin{center}
-	\centering
-		\includegraphics[height=0.17\textheight, width=0.4\textwidth]{figs/Attention gates over skip connections.png}
-	\captionof{figure}{Skip Connections, Attention Gates and Bottlenecks}
-	\label{FIG:Attention gates over skip connections}
+    \centering
+    \includegraphics[height=0.17\textheight, width=0.4\textwidth]{figs/Attention gates over skip connections.png}
+
+    \vspace{2mm}
+
+    % Dashed line settings
+    \setlength{\dashlinedash}{0.5pt}
+    \setlength{\dashlinegap}{1.5pt}
+
+    % Legend Box
+    \fbox{
+    \begin{tabular}{cl|cl}
+
+    \includegraphics[width=0.018\textwidth]{figs/Label1/1.png}
+    &
+    \scriptsize Concatenation
+
+    &
+
+    \includegraphics[width=0.015\textwidth]{figs/Label1/9.png}
+    &
+    \scriptsize MaxPool
+
+    \\[1.5mm]
+
+    \hdashline
+
+    \includegraphics[width=0.015\textwidth]{figs/Label1/7.png}
+    &
+    \scriptsize TransConv
+
+    &
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/3.png}
+    &
+    \scriptsize Dimension
+
+    \\[1.5mm]
+
+    \hdashline
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/4.png}
+    &
+    \scriptsize Number of channels
+
+    &
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/8.png}
+    &
+    \scriptsize Dense Inception-Res Block
+
+    \\[1.5mm]
+
+    \hdashline
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/10.png}
+    &
+    \scriptsize AttentionGate
+
+    \\
+
+    \end{tabular}
+    }
+
+    \captionof{figure}{Skip Connections, Attention Gates and Bottleneck}
+    \label{FIG:Attention gates over skip connections}
 \end{center}
 
 \section*{Part II: Comprehensive Architecture of the Proposed Framework}
@@ -509,6 +571,53 @@ $X_0 = \{X^{(1)} X^{(2)} X^{(3)} X^{(4)}\} - \{X^{(1)}\}\in \mathbb{R}^{(H\times
 \begin{figure*}[!tbp]
     \centering
     \includegraphics[width=\textwidth]{figs/Overall Architecture.png}
+
+    \vspace{2mm}
+
+    \setlength{\dashlinedash}{0.5pt}
+    \setlength{\dashlinegap}{1.5pt}
+
+    \fbox{
+    \begin{tabular}{cl|cl|cl}
+
+    \includegraphics[width=0.018\textwidth]{figs/Label1/1.png}
+    & \scriptsize Concatenation
+    &
+    \includegraphics[width=0.015\textwidth]{figs/Label1/9.png}
+    & \scriptsize MaxPool
+    &
+    \includegraphics[width=0.015\textwidth]{figs/Label1/7.png}
+    & \scriptsize TransConv
+
+    \\[1.5mm]
+    \hdashline
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/3.png}
+    & \scriptsize Dimension
+    &
+    \includegraphics[width=0.030\textwidth]{figs/Label1/4.png}
+    & \scriptsize Number of channels
+    &
+    \includegraphics[width=0.030\textwidth]{figs/Label1/8.png}
+    & \scriptsize Dense Inception-Res Block
+
+    \\[1.5mm]
+    \hdashline
+
+    \includegraphics[width=0.030\textwidth]{figs/Label1/10.png}
+    & \scriptsize AttentionGate
+    &
+    \includegraphics[width=0.030\textwidth]{figs/Label1/2.png}
+    & \scriptsize Average-pooled by factor of $n$
+    &
+    \includegraphics[width=0.030\textwidth]{figs/Label1/11.png}
+    & \scriptsize Conc 1x1x1 with sigmoid
+
+    \\
+
+    \end{tabular}
+    }
+
     \caption{Integrated Architectural Framework}
     \label{FIG:Overall Architecture}
 \end{figure*}
@@ -660,6 +769,40 @@ The hyperparameters for the training are as reported below****:
 
 For the loss function, we used an adaptive combination of Dice Loss and Categorical Focal Loss.
 
+\begin{figure*}[!t]
+\centering
+\begin{tabular}{ccc}
+
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Loss vs Validation Loss.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Accuracy vs Validation Accuracy.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Mean IoU vs Validation Mean IoU.jpg} \\
+
+(a) Loss Graph & (b) Accuracy Graph & (c) Mean IoU Graph \\[6pt]
+
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training IoU vs Validation IoU.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training F1 Score vs Validation F1 Score.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Precision vs Validation Precision.jpg} \\
+
+(d) IoU Graph & (e) F1 Score Graph & (f) Precision Graph \\[6pt]
+
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Recall vs Validation Recall.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (TC) Score vs Validation Dice (TC) Score.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (WT) Score vs Validation Dice (WT) Score.jpg} \\
+
+(g) Recall Graph & (h) TC Dice Score Graph & (i) WT Dice Score Graph \\[6pt]
+
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (ET) Score vs Validation Dice (ET) Score.jpg} &
+\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Macro Dice Score vs Validation Macro Dice Score.jpg} & \\
+
+(j) ET Dice Score Graph & (k) Macro Dice Score Graph &
+
+\end{tabular}
+
+\caption{Performance graphs across different evaluation metrics (Training represented as Blue and Validation represented as Red).}
+\label{fig:5x2_graphs}
+
+\end{figure*}
+
 \subsection{Quantitative and Qualitative Analysis}
 We evaluated our proposed U-Net variant on the merged BraTS 2020 and 2021 training sets. A 75/25 split was applied, with 25\% of the cases held out for validation. Each case included four co-registered MRI modalities—T1, T1Gd (post-contrast), T2, and FLAIR—along with voxel-wise labels produced by expert neuro radiologists. Label definitions and pre-processing followed the BraTS challenge conventions.
 
@@ -697,43 +840,9 @@ The results in Table~\ref{tbl1} show balanced and strong performance across tumo
 
 The graphical representations corresponding to each result are provided in Figure~\ref{fig:5x2_graphs} for clarity.
 
-\begin{figure*}[!tbp]
-\centering
-\begin{tabular}{ccc}
-
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Loss vs Validation Loss.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Accuracy vs Validation Accuracy.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Mean IoU vs Validation Mean IoU.jpg} \\
-
-(a) Loss Graph & (b) Accuracy Graph & (c) Mean IoU Graph \\[6pt]
-
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training IoU vs Validation IoU.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training F1 Score vs Validation F1 Score.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Precision vs Validation Precision.jpg} \\
-
-(d) IoU Graph & (e) F1 Score Graph & (f) Precision Graph \\[6pt]
-
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Recall vs Validation Recall.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (TC) Score vs Validation Dice (TC) Score.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (WT) Score vs Validation Dice (WT) Score.jpg} \\
-
-(g) Recall Graph & (h) TC Dice Score Graph & (i) WT Dice Score Graph \\[6pt]
-
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (ET) Score vs Validation Dice (ET) Score.jpg} &
-\includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Macro Dice Score vs Validation Macro Dice Score.jpg} & \\
-
-(j) ET Dice Score Graph & (k) Macro Dice Score Graph &
-
-\end{tabular}
-
-\caption{Performance graphs across different evaluation metrics (Training represented as Blue and Validation represented as Red).}
-\label{fig:5x2_graphs}
-
-\end{figure*}
-
 
 For qualitative assessment, representative segmentation results generated by the final trained model are presented in Figure~\ref{fig:5x2_graphs1}.
-\begin{figure*}[!tbp]
+\begin{figure*}[!t]
 \centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
