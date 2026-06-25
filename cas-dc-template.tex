@@ -45,6 +45,11 @@
 \tsc{DE}
 %%%
 \usepackage{hyperref}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{10pt plus 2pt minus 4pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{10pt plus 2pt minus 4pt}
 % Uncomment and use as if needed
 %\newtheorem{theorem}{Theorem}
 %\newtheorem{lemma}[theorem]{Lemma}
@@ -753,13 +758,13 @@ For Training we have used the Data from the popular BraTS Dataset, modifying it 
 
 In this we are seeing exactly the middle slice of an example data. Being the middle slice, this is the worst case scenario of how the crop affects the data, as the brain cannot be any wider in any other portion. As even in the widest part of the brain more than 90\% of the data is still present, and almost all off the ground truth mask is present. This suggests that that >97\% of the useful data is still present. Through cropping, we are discarding the black empty portion around the brain, making the date more light weight and easier to handle. this trade-off was considered acceptable due to the negligible impact on segmentation performance as even if we feed the model uncropped data afterwords when the training is done, it predicts the ground truth mask with effectively the same accuracy. This cropping strategy was also beneficial as it brings the size of each dimension in the order of $2^n$, which is consider to be the best practice for any data that is being fed to a network with multiple maxpooling layers. These .nii files are then converted into numpy arrays of size $128\times128\times128\times3$ and stored on the hard disk as .npy files.
 For the ground truth masks they consist four labels: Unlabelled volume (Label 0), Necrotic and non-enhancing tumour core (NCR/NET) (Label 1), Peritumoral edema (ED) (Label 2), GD Enhancing Tumour (ET) (Label 4). Now the ground truth masks have a problem. The ET is ladled as 4 and label 3 is empty. Even though it is not supposed to cause any problems in the training, but just to mitigate the inconsistency, while processing we reassign the ET region from label 4 to label 3 and the data points in the mask files are then one hot encoded and stored as int8 in a numpy array. We store that numpy array in the hard disk as .npy file to use during training. 
-Another preprocessing step we take is to discard the data where less than 1\% of the volume is covered by the mask, meaning if a data has less than 1\% tumour volume, then we discard that data point entirely**. 
+Another preprocessing step we take is to discard the data where less than 1\% of the volume is covered by the mask, meaning if a data has less than 1\% tumour volume, then we discard that data point entirely\footnote{This discarding criterion, along with the on-the-fly data generator pipeline, is adopted from the YouTube tutorial series by Dr.\ Sreenivas Bhattiprolu (``Digital Srini'' on YouTube).}.
 \\
-We combined the BraTS 2020 and BraTS 2021 datasets to obtain a lager dataset. About 1400+ volumetric scan were present in the combined dataset; after applying this discarding criterion, $\sim1200$ valid image-mask pairs remain. The mean file size of a NumPy files for a single image array is approximately 64MB, and the corresponding mask array occupies roughly 48MB. During training, the data are read on-the-fly via a Python generator, which yields a tuple $(X,Y); X,Y$ being an image-Mask pair. This approach avoids loading the entire dataset into memory and makes it possible to train with batch size of $1$ to $3$. The generator also performs random shuffling of the dataset at the beginning of each epoch***.
+We combined the BraTS 2020 and BraTS 2021 datasets to obtain a lager dataset. About 1400+ volumetric scan were present in the combined dataset; after applying this discarding criterion, $\sim1200$ valid image-mask pairs remain. The mean file size of a NumPy files for a single image array is approximately 64MB, and the corresponding mask array occupies roughly 48MB. During training, the data are read on-the-fly via a Python generator, which yields a tuple $(X,Y); X,Y$ being an image-Mask pair. This approach avoids loading the entire dataset into memory and makes it possible to train with batch size of $1$ to $3$. The generator also performs random shuffling of the dataset at the beginning of each epoch\footnote{The epoch-wise random shuffling strategy is also adopted from the YouTube tutorial series by Dr.\ Sreenivas Bhattiprolu (``Digital Srini'' on YouTube).}.
 \\
-For training and development, we utilized multiple GPUs depending on availability, including RTX 3060 Ti Mobile (8 GB VRAM), Titan X Pascal (12 GB VRAM), Quadro P5000 (16 GB VRAM) and Tesla T4 GPU on Google Colab(16GB VRAM). Due to the limitations of the older Quadro P5000 architecture, we faced some problems in handling the computational demands of 3D convolutions. To mitigate memory constraints across all devices, we adopted mixed precision training, which reduces tensor size and thereby alleviates VRAM usage. Even with this optimization, the maximum feasible batch size across all GPUs was limited to 2, the 3060 Ti Mobile had to use a batch size of 1. Approximate GPU VRAM Usage is $\sim11$ GiB for a batch Size of 2 and $\sim13.5GiB$ for a Batch Size of $3$. Average inference times per batch are $0.8853$s and $1.3295$s for a $2$-volume batch and a $3$-volume batch respectively; Average inference times per volume are $0.4427$s and $0.4432$s for a $2$-volume batch and a $3$-volume batch respectively*.
+For training and development, we utilized multiple GPUs depending on availability, including RTX 3060 Ti Mobile (8 GB VRAM), Titan X Pascal (12 GB VRAM), Quadro P5000 (16 GB VRAM) and Tesla T4 GPU on Google Colab(16GB VRAM). Due to the limitations of the older Quadro P5000 architecture, we faced some problems in handling the computational demands of 3D convolutions. To mitigate memory constraints across all devices, we adopted mixed precision training, which reduces tensor size and thereby alleviates VRAM usage. Even with this optimization, the maximum feasible batch size across all GPUs was limited to 2, the 3060 Ti Mobile had to use a batch size of 1. Approximate GPU VRAM Usage is $\sim11$ GiB for a batch Size of 2 and $\sim13.5GiB$ for a Batch Size of $3$. Average inference times per batch are $0.8853$s and $1.3295$s for a $2$-volume batch and a $3$-volume batch respectively; Average inference times per volume are $0.4427$s and $0.4432$s for a $2$-volume batch and a $3$-volume batch respectively\footnote{VRAM usage and inference times are reported from partial test runs on Google Colab using a Tesla T4 GPU.}.
 \\
-The hyperparameters for the training are as reported below****:
+The hyperparameters for the training are as reported below\footnote{Hyperparameters reported as per the final training run.}:
 \begin{itemize}
     \item Learning Rate: $0.0001$
     \item Optimizer: Adam
@@ -768,6 +773,36 @@ The hyperparameters for the training are as reported below****:
 \end{itemize}
 
 For the loss function, we used an adaptive combination of Dice Loss and Categorical Focal Loss.
+
+\begin{table*}[!t]
+\caption{Validation Performance Summary}
+\label{tbl1}
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\makecell[l]{Metric\\(Validation)} &
+\makecell[c]{Best\\(Value, Epoch)} &
+\makecell[c]{Final\\(Value, Epoch)} \\
+\midrule
+\makecell[l]{Validation loss\\(lower is better)} &
+\makecell[c]{0.130518 (142)} &
+\makecell[c]{0.138168 (152)} \\
+\makecell[l]{Validation accuracy} & \makecell[c]{0.988855 (90)} & \makecell[c]{0.987859 (152)} \\
+\makecell[l]{Mean IoU\\(one-hot mean)} & \makecell[c]{0.592392 (149)} & \makecell[c]{0.584321 (152)} \\
+\makecell[l]{IoU score} & \makecell[c]{0.824554 (142)} & \makecell[c]{0.795915 (152)} \\
+\makecell[l]{F1 score} & \makecell[c]{0.962600 (104)} & \makecell[c]{0.927219 (152)} \\
+\makecell[l]{Precision} & \makecell[c]{0.969964 (80)} & \makecell[c]{0.943784 (152)} \\
+\makecell[l]{Recall} & \makecell[c]{0.974056 (114)} & \makecell[c]{0.911534 (152)} \\
+\makecell[l]{Dice (TC)$^*$} & \makecell[c]{0.983462 (104)} & \makecell[c]{0.958690 (152)} \\
+\makecell[l]{Dice (WT)$^*$} & \makecell[c]{0.946574 (145)} & \makecell[c]{0.845925 (152)} \\
+\makecell[l]{Dice (ET)$^*$} & \makecell[c]{0.953780 (142)} & \makecell[c]{0.905504 (152)} \\
+\makecell[l]{Macro Dice (average)} & \makecell[c]{0.950610 (104)} & \makecell[c]{0.903373 (152)} \\
+\bottomrule
+\end{tabular}
+\par\vspace{4pt}
+\parbox{0.6\linewidth}{\footnotesize $^*$TC — Necrotic and non-enhancing tumour core (Label 1); WT — Peritumoral edema (Label 2); ET — GD Enhancing Tumour (Label 3).}
+\end{table*}
 
 \begin{figure*}[!t]
 \centering
@@ -808,35 +843,7 @@ We evaluated our proposed U-Net variant on the merged BraTS 2020 and 2021 traini
 
 Training continued up to epoch 152, with validation loss and segmentation metrics tracked throughout. We report both the best values observed during training and the final results at epoch 152. Best values reflect the model's peak capability, which could be recovered through checkpoint selection or ensembling.
 
-The results in Table~\ref{tbl1} show balanced and strong performance across tumor subregions, with the highest stability for the Tumor Core (TC) and consistently solid scores for the Enhancing Tumor (ET). Dice WT showed a larger gap between the best and final, highlighting greater sensitivity to checkpoint selection and training dynamics. The best performance the model provides is for the TC region which confirms our proposed dense residual-inception blocks and attention modules are well capable of robust segmentation. The achieved dice score for ET and WT being 0.9055 and 0.8459 respectively and their peak being 0.9538 and 0.9466 shows that model is well capable of segmenting small and heterogeneous classes, but we need to be better at checkpoint selection rather than training the model for a set amount of epochs. 
-
-\begin{table}[width=.9\linewidth,cols=3,pos=h]
-\caption{Validation Performance Summary}
-\label{tbl1}
-\centering
-\small
-\begin{tabular*}{0.95\linewidth}{@{} l l l @{}}
-\toprule
-\makecell[l]{Metric\\(Validation)} &
-\makecell[c]{Best\\(Value, Epoch)} &
-\makecell[c]{Final\\(Value, Epoch)} \\
-\midrule
-\makecell[l]{Validation loss\\(lower is better)} &
-\makecell[c]{0.130518 (142)} &
-\makecell[c]{0.138168 (152)} \\
-\makecell[l]{Validation accuracy} & \makecell[c]{0.988855 (90)} & \makecell[c]{0.987859 (152)} \\
-\makecell[l]{Mean IoU\\(one-hot mean)} & \makecell[c]{0.592392 (149)} & \makecell[c]{0.584321 (152)} \\
-\makecell[l]{IoU score} & \makecell[c]{0.824554 (142)} & \makecell[c]{0.795915 (152)} \\
-\makecell[l]{F1 score} & \makecell[c]{0.962600 (104)} & \makecell[c]{0.927219 (152)} \\
-\makecell[l]{Precision} & \makecell[c]{0.969964 (80)} & \makecell[c]{0.943784 (152)} \\
-\makecell[l]{Recall} & \makecell[c]{0.974056 (114)} & \makecell[c]{0.911534 (152)} \\
-\makecell[l]{Dice (TC)*****} & \makecell[c]{0.983462 (104)} & \makecell[c]{0.958690 (152)} \\
-\makecell[l]{Dice (WT)*****} & \makecell[c]{0.946574 (145)} & \makecell[c]{0.845925 (152)} \\
-\makecell[l]{Dice (ET)*****} & \makecell[c]{0.953780 (142)} & \makecell[c]{0.905504 (152)} \\
-\makecell[l]{Macro Dice (average)} & \makecell[c]{0.950610 (104)} & \makecell[c]{0.903373 (152)} \\
-\bottomrule
-\end{tabular*}
-\end{table}
+The results in Table~\ref{tbl1} show balanced and strong performance across tumor subregions, with the highest stability for the Tumor Core (TC) and consistently solid scores for the Enhancing Tumor (ET). Dice WT showed a larger gap between the best and final, highlighting greater sensitivity to checkpoint selection and training dynamics. The best performance the model provides is for the TC region which confirms our proposed dense residual-inception blocks and attention modules are well capable of robust segmentation. The achieved dice score for ET and WT being 0.9055 and 0.8459 respectively and their peak being 0.9538 and 0.9466 shows that model is well capable of segmenting small and heterogeneous classes, but we need to be better at checkpoint selection rather than training the model for a set amount of epochs.
 
 The graphical representations corresponding to each result are provided in Figure~\ref{fig:5x2_graphs} for clarity.
 
@@ -845,22 +852,21 @@ For qualitative assessment, representative segmentation results generated by the
 \begin{figure*}[!t]
 \centering
 \begin{tabular}{ccc}
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 1.png} &
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 28.png} \\
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 1.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 28.png} \\
 
 Example 1 & Example 2 & Example 3 \\
 
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 53.png} &
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 57.png} & 
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 59.png} \\
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 53.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 57.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 59.png} \\
 
 Example 4 & Example 5 & Example 6 \\
 
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 63.png} &
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 66.png} &
-
-\includegraphics[width=0.34\textwidth]{figs/Conture of Tumor Over Flair images/Image 74.png} \\
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 63.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 66.png} &
+\includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 74.png} \\
 
 Example 7 & Example 8 & Example 9\\
 
@@ -871,10 +877,10 @@ Example 7 & Example 8 & Example 9\\
 
 \subsection{Robustness}
 The proposed model is evaluated against other popular network architectures to assess its performance. The comparative results, in Table \ref{tab:brats_comparison}, demonstrate the effectiveness and robustness of the proposed method.
-\begin{table*}[!tbp]
-\centering
+\begin{table*}[!t]
 \caption{Comparison of Dice scores on BraTS benchmark datasets.}
 \label{tab:brats_comparison}
+\centering
 \begin{tabular}{lcccc}
 \toprule
 Model (Dataset / Year) & WT Dice & TC Dice & ET Dice & Source \\
@@ -897,10 +903,10 @@ On validation, our model ranks among top performers for TC and ET, with Dice sco
 
 \subsection{Computational Complexity}
 One notable advantage of the proposed model is its computational efficiency is that it being light-weight. When we compare the parameter count of our model with others we observe the following in Table \ref{tab:parameter_comparison}.
-\begin{table*}[!tbp]
-\centering
+\begin{table*}[!t]
 \caption{Comparison of total trainable parameters across recent 3D segmentation models.}
 \label{tab:parameter_comparison}
+\centering
 \begin{tabular}{lcc}
 \toprule
 Model (Ref.) & Total Parameters (M) & Remarks \\
@@ -921,10 +927,10 @@ UNETR (2021) & 102.50 & ViT-based encoder \\
 As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (61.98M) and UNETR (102.5M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
 
 The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others we get the following in Table \ref{tab:complexity}.
-\begin{table*}[!tbp]
-\centering
+\begin{table*}[!t]
 \caption{Comparison of model complexity in terms of trainable parameters and FLOPs.}
 \label{tab:complexity}
+\centering
 \begin{tabular}{lcc}
 \toprule
 Methods & Parameters (M) & FLOPs (G) \\
