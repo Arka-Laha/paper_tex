@@ -78,7 +78,7 @@ At each encoder stage $l\in\{1,2,3,4\}$, the network performs three sequential o
     \end{itemize}
     \item Downsampling:
     \begin{itemize}
-        \item The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l, p = 2)$,  p represents the scaling factor.
+        \item The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l,\allowbreak\, p = 2)$, where $p$ represents the scaling factor.
     \end{itemize}
     \item Skip Connection Storage:
     \begin{itemize}
@@ -103,7 +103,7 @@ The decoder path performs progressive upsampling and reconstruction to return th
 
 \begin{itemize}
     \item Upsampling:
-The feature map is expanded using transposed 3D convolutions: $U_m = ConvTranspose3D (B_m, k = 2, s = 2)$, where $k$ and $s$ denote kernel size and stride, respectively.
+The feature map is expanded using transposed 3D convolutions: $U_m = ConvTranspose3D\allowbreak(B_m, k = 2, s = 2)$, where $k$ and $s$ denote kernel size and stride, respectively.
 \end{itemize}
 
 \begin{itemize}
