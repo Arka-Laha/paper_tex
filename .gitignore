@@ -6,9 +6,10 @@
 *.log
 *.out
 *.synctex.gz
+*.synctex
 
 cas-dc-template.pdf
 
 *.abs
 temp/
-sectioned/main.pdf
+Sectioned/main.pdf
