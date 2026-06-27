@@ -33,7 +33,7 @@
 \usepackage{tikz}
 \usepackage{arydshln}
 \usepackage{stfloats}
-\usepackage[section]{placeins}
+\usepackage{placeins}
 
 %%%Author definitions
 \def\tsc#1{\csdef{#1}{\textsc{\lowercase{#1}}\xspace}}
@@ -59,6 +59,7 @@
 
 \begin{document}
 \let\WriteBookmarks\relax
+\raggedbottom
 \renewcommand{\topfraction}{.95}
 \renewcommand{\bottomfraction}{.85}
 \renewcommand{\textfraction}{.05}
@@ -211,6 +212,13 @@ Accurate and efficient brain tumor segmentation from multimodal MRI remains a ch
 
 Despite the promising results reported by existing CAD systems and deep learning-based approaches, accurate segmentation of heterogeneous brain tumor subregions from volumetric MRI data remains a challenging problem. The limitations of handcrafted feature-based methods and the growing demand for exploiting three-dimensional spatial context have encouraged the development of 3D MRI segmentation frameworks capable of learning more discriminative tumor representations. Motivated by these observations, this work proposes a novel 3D deep learning-based brain tumor segmentation framework to improve segmentation accuracy and robustness while maintaining computational efficiency.
 
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/Abstract Graphical.png}
+    \caption{Graphical illustration of the proposed framework.}
+    \label{fig:graphical_abstract}
+\end{figure*}
+
 \section{Related work}
 \subsection{Motivation} 
 
@@ -223,13 +231,6 @@ In this work, we adopt a Three-Dimensional Convolutional Neural Network (3D-CNN)
 \section*{Part I: Module-Wise Architectural Description}
 \subsection{Dense Inception Residual Convolution (DRIC) Blocks}
 The first step in improving the classical U-Net architecture is to replace the $3\times3\times3$ convolution with something more modern that can capture both fine and coarse features in a single go. To address this limitation, inception-style parallel convolutions are employed, where parallel convolutional operations are performed using multiple sizes of kernels to extract feature on every scale. In our approach, we also added Dense and Residual Connections in the block so that feature preservation is improved during deep feature transformation. So, the fundamental feature extraction unit in our architecture combines three design principles: inception-style multi-branch convolution, dense connectivity, and residual learning, shown in Figure \ref{FIG:DRIC Block}.
-
-\begin{figure*}[!t]
-    \centering
-    \includegraphics[width=\textwidth]{figs/Abstract Graphical.png}
-    \caption{Graphical illustration of the proposed framework.}
-    \label{fig:graphical_abstract}
-\end{figure*}
 
 \begin{center}
 \begin{minipage}{\columnwidth}
@@ -573,7 +574,7 @@ The raw input data (.nii files) are passed through a custom data generator that 
 Each subject is represented as a pre-aligned multi-modal MRI volume:
 $X_0 = \{X^{(1)} X^{(2)} X^{(3)} X^{(4)}\} - \{X^{(1)}\}\in \mathbb{R}^{(H\times W\times D\times 3)}$, where $X^{(1)}, X^{(2)}, X^{(3)}, X^{(4)}$ correspond to the T1, T1ce, T2, and FLAIR modalities respectively, and $H = W = D = 128$. Before entering the network, each modality is min-max normalized independently to [0, 1]. The three channels are stacked to form the initial 3D input tensor in the form of a NumPy array converted from the .nii file format. The height, width, and depth of 128 is achieved by hard cropping into the middle of the middle where most of the data resides, discarding the empty space outside the relevant brain area.  
 
-\begin{figure*}[!tbp]
+\begin{figure*}[!htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/Overall Architecture.png}
 
@@ -735,7 +736,7 @@ This adaptive scheme enables a balanced optimization process, starting with robu
 \subsubsection{Data Pre-processing and Training}
 For Training we have used the Data from the popular BraTS Dataset, modifying it slightly to our convenience. In the BraTS Dataset, each image consists of four modalities. These modalities are essentially different representations of the same brain image but containing different types of information as they are captured through different criterion. These modalities are called T1, T1CE(T1 Contrast Enhanced), T2, and Flair. All the modalities for each date are present in the dataset in the form of .nii flies, along with the ground-truth mask which is also present in .nii file format. For processing this data prior to training we excluded the T1 modality, as T1CE is just the contrast enhanced version of T1, as it contains most of the information present in T1 while additionally providing contrast-enhanced information due to it being contrast enhanced. This means we can reduce 25\% size for each data while loosing little to no useful information. For the remaining 3 modalities(T1CE, T2 and Flair) we first cropped each modality from a size of $240\times240\times155$ to $128\times128\times128$. Now theoretically this may also lead to loosing so essential information from the data. However, even after hard cropping, we still retain almost all the image information. This is shown in Fig.~\ref{fig:wide}
 
-\begin{figure*}[!tbp]
+\begin{figure*}[!htbp]
 \centering
 
 \begin{subfigure}[b]{0.48\textwidth}
@@ -774,7 +775,7 @@ The hyperparameters for the training are as reported below\footnote{Hyperparamet
 
 For the loss function, we used an adaptive combination of Dice Loss and Categorical Focal Loss.
 
-\begin{table*}[!t]
+\begin{table*}[!htbp]
 \caption{Validation Performance Summary}
 \label{tbl1}
 \centering
@@ -804,7 +805,7 @@ For the loss function, we used an adaptive combination of Dice Loss and Categori
 \parbox{0.6\linewidth}{\footnotesize $^*$TC — Necrotic and non-enhancing tumour core (Label 1); WT — Peritumoral edema (Label 2); ET — GD Enhancing Tumour (Label 3).}
 \end{table*}
 
-\begin{figure*}[!t]
+\begin{figure*}[!htbp]
 \centering
 \begin{tabular}{ccc}
 
@@ -849,7 +850,7 @@ The graphical representations corresponding to each result are provided in Figur
 
 
 For qualitative assessment, representative segmentation results generated by the final trained model are presented in Figure~\ref{fig:5x2_graphs1}.
-\begin{figure*}[!t]
+\begin{figure*}[!htbp]
 \centering
 \begin{tabular}{ccc}
 \includegraphics[width=0.32\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
@@ -877,7 +878,7 @@ Example 7 & Example 8 & Example 9\\
 
 \subsection{Robustness}
 The proposed model is evaluated against other popular network architectures to assess its performance. The comparative results, in Table \ref{tab:brats_comparison}, demonstrate the effectiveness and robustness of the proposed method.
-\begin{table*}[!t]
+\begin{table*}[!htbp]
 \caption{Comparison of Dice scores on BraTS benchmark datasets.}
 \label{tab:brats_comparison}
 \centering
@@ -903,7 +904,7 @@ On validation, our model ranks among top performers for TC and ET, with Dice sco
 
 \subsection{Computational Complexity}
 One notable advantage of the proposed model is its computational efficiency is that it being light-weight. When we compare the parameter count of our model with others we observe the following in Table \ref{tab:parameter_comparison}.
-\begin{table*}[!t]
+\begin{table*}[!htbp]
 \caption{Comparison of total trainable parameters across recent 3D segmentation models.}
 \label{tab:parameter_comparison}
 \centering
@@ -927,7 +928,7 @@ UNETR (2021) & 102.50 & ViT-based encoder \\
 As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (61.98M) and UNETR (102.5M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
 
 The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others we get the following in Table \ref{tab:complexity}.
-\begin{table*}[!t]
+\begin{table*}[!htbp]
 \caption{Comparison of model complexity in terms of trainable parameters and FLOPs.}
 \label{tab:complexity}
 \centering
