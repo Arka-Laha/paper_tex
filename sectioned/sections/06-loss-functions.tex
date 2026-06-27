@@ -1,0 +1,58 @@
+%% ============================================================
+%% SECTION: Loss Functions
+%% ============================================================
+
+\section{Loss Functions}
+
+The choice of an appropriate loss function is critical for medical image segmentation, particularly in highly imbalanced tasks such as brain tumour segmentation, where foreground regions often occupy a very small fraction of the overall volume. In this work, we proposed an Adaptive Loss Function that combines Dice Loss with Categorical Focal Loss, dynamically adjusting their relative contributions as training progresses.
+
+\subsection{Dice Loss}
+
+The Dice coefficient directly measures the overlap between the predicted and ground truth masks. For multi-class segmentation, the Dice Loss is defined as:
+\begin{equation}
+    \mathcal{L}_{\text{Dice}} = 1 -
+    \frac{
+    2 \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c}\,\hat{y}_{i,c}
+    }{
+    \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c}^{2}
+    +
+    \sum_{i=1}^{N} \sum_{c=1}^{C} \hat{y}_{i,c}^{2}
+    +
+    \epsilon
+    }
+    \label{Dice Loss}
+\end{equation}
+where $y_{i,c} \in \{0,1\}$ denotes the ground truth one-hot encoded label for voxel $i$ in class $c$, $\hat{y}_{i,c}$ represents the predicted softmax probability, $N$ is the total number of voxels, $C$ is the number of classes, and $\epsilon$ is a small constant added for numerical stability.
+\\
+Dice Loss encourages overlap between predicted and ground-truth masks, and is particularly effective at handling class imbalance.
+
+\subsection{Categorical Focal Loss}
+
+To further address the imbalance and focus learning on difficult-to-classify voxels, we employ the Categorical Focal Loss (adapted from Lin et al., 2017):
+\begin{equation}
+    \mathcal{L}_{\text{Focal}} = - \frac{1}{N}
+    \sum_{i=1}^{N} \sum_{c=1}^{C}
+    \alpha_c \left(1 - \hat{y}_{i,c}\right)^{\gamma}
+    \, y_{i,c} \log\left(\hat{y}_{i,c}\right)
+\end{equation}
+Here, $\gamma > 0$ is the focusing parameter that reduces the relative loss contribution of well-classified voxels, while $\alpha_c$ is the balancing factor for class $c$.
+
+\subsection{Adaptive Weighting Strategy}
+
+Rather than fixing the relative importance of Dice and Focal losses, we introduce a dynamic weighting scheme that changes over epochs. Let $t$ denote the current epoch, then the weights are defined as:
+\begin{equation}
+    w_{\text{Dice}}(t) = \frac{1}{1 + \exp(-\beta t)},
+    \quad
+    w_{\text{Focal}}(t) = 1 - w_{\text{Dice}}(t).
+\end{equation}
+Where $\beta$ controls the smoothness of the transition. Early in training, the model emphasizes Focal Loss to tackle hard examples and improve class discrimination. As training progresses, the weight shifts towards Dice Loss, ensuring that fine-grained segmentation quality and overlap improve.
+
+\subsection{Combined Loss}
+
+The final adaptive loss is then given by:
+\begin{equation}
+    \mathcal{L}_{\text{Adaptive}}(t) =
+    w_{\text{Dice}}(t)\, \mathcal{L}_{\text{Dice}}
+    +
+    w_{\text{Focal}}(t)\, \mathcal{L}_{\text{Focal}}
+\end{equation}

@@ -1,0 +1,7 @@
+%% ============================================================
+%% SECTION: Conclusion
+%% ============================================================
+
+\section{Conclusion}
+
+This proposed model performs on par with, and in some cases exceeds, established image segmentation architectures, managing to compete with popular Transformer based networks, while being much lightweight than most of them. In this paper, we have not shown justifications for many of the improvements that we have made. For example we have not shown any evidence that our adaptive loss function works better than other mainstream loss functions like Tversky or Boundary loss; or even if it works better than Dice Loss or Categorical Focal Loss stand alone. Also in case of our DRIC block, we have not formally tested if all components of that block is strictly necessary, or how it performs compared to already available/popular Dense, Residual, or Inception block. These components of  the architecture have been decided by theoretical understanding and preliminary small-scale testing. We have failed to show any justification for them, mostly due to a lack of equipment and a lack of scope. Also we have not tested other criteria that could theoretically have boosted our model performance; for example other validation strategies like cross-validation or hold-out, data augmentation strategies, Other normalization approach, etc. We intend to test experiment with them in future expansion of the work, if the scope permits.
