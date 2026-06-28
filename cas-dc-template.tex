@@ -265,7 +265,7 @@ Brain tumor \cite{deangelis2001brain} encompasses various abnormal growths calle
 
 The lack of standardization in the intensities of the MRI voxels further complicates the segmentation, as identical tumor tissues can present differently depending on the strength of the scanner and the acquisition settings. Consequently, automated annotation of volumetric MRI images has become an essential deep learning endeavor in supporting healthcare professionals to simplify and unify the process of labeling intricate 3D medical images for precise and consistent analysis. Conventional automatic brain tumor segmentation techniques rely predominantly on handcrafted feature engineering \cite{menze2014multimodal}, following a traditional machine learning framework where feature extraction and classifier training are performed independently. In contrast, deep neural networks enable end-to-end learning of hierarchical, task-specific feature representations directly from multimodal MRI data, facilitating more effective brain tumor segmentation \cite{bengio2013representation}.
 
-Accurate and efficient brain tumor segmentation from multimodal MRI remains a challenge due to the substantial variability in tumor appearance, size, location, and morphology. Mohammad Havaei et al.~\cite{havaei2017brain} proposed a fully automatic deep convolutional neural network framework that integrates local and global contextual features, class-imbalance-aware training, and cascaded refinement to achieve competitive BraTS segmentation performance with reduced computational complexity and inference time. El-Sayed A et al.~\cite{el2014computer} proposed a hybrid machine learning framework that combines pulse-coupled neural network-based segmentation, wavelet feature extraction, principal component analysis, and neural network classification, achieving high accuracy in distinguishing normal and abnormal brain MRI scans while demonstrating robustness and computational efficiency. In addition, their comprehensive review of contemporary CAD-based brain MRI segmentation and classification techniques \cite{maitra2008hybrid, el2010hybrid, cheng2010automated, cherkassky2007learning} provided valuable insights into existing challenges and future research directions.
+{\sloppy Accurate and efficient brain tumor segmentation from multimodal MRI remains a challenge due to the substantial variability in tumor appearance, size, location, and morphology. Mohammad Havaei et al.~\cite{havaei2017brain} proposed a fully automatic deep convolutional neural network framework that integrates local and global contextual features, class-imbalance-aware training, and cascaded refinement to achieve competitive BraTS segmentation performance with reduced computational complexity and inference time. El-Sayed A et al.~\cite{el2014computer} proposed a hybrid machine learning framework that combines pulse-coupled neural network-based segmentation, wavelet feature extraction, principal component analysis, and neural network classification, achieving high accuracy in distinguishing normal and abnormal brain MRI scans while demonstrating robustness and computational efficiency. In addition, their comprehensive review of contemporary CAD-based brain MRI segmentation and classification techniques \cite{maitra2008hybrid, el2010hybrid, cheng2010automated, cherkassky2007learning} provided valuable insights into existing challenges and future research directions.\par}
 
 Despite the promising results reported by existing CAD systems and deep learning-based approaches, accurate segmentation of heterogeneous brain tumor subregions from volumetric MRI data remains a challenging problem. The limitations of handcrafted feature-based methods and the growing demand for exploiting three-dimensional spatial context have encouraged the development of 3D MRI segmentation frameworks capable of learning more discriminative tumor representations. Motivated by these observations, this work proposes a novel 3D deep learning-based brain tumor segmentation framework to improve segmentation accuracy and robustness while maintaining computational efficiency.
 
@@ -622,7 +622,7 @@ At each encoder stage $l\in\{1,2,3,4\}$, the network performs three sequential o
     \end{itemize}
     \item Downsampling:
     \begin{itemize}
-        \item The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l,\allowbreak\, p = 2)$, where $p$ represents the scaling factor.
+        \item {\sloppy The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l, p = 2)$, where $p$ represents the scaling factor.\par}
     \end{itemize}
     \item Skip Connection Storage:
     \begin{itemize}
@@ -770,7 +770,8 @@ Another preprocessing step we take is to discard the data where less than 1\% of
 
 We combined the BraTS 2020 and BraTS 2021 datasets to obtain a lager dataset. About 1400+ volumetric scan were present in the combined dataset; after applying this discarding criterion, $\sim1200$ valid image-mask pairs remain. The mean file size of a NumPy files for a single image array is approximately 64MB, and the corresponding mask array occupies roughly 48MB. During training, the data are read on-the-fly via a Python generator, which yields a tuple $(X,Y); X,Y$ being an image-Mask pair. This approach avoids loading the entire dataset into memory and makes it possible to train with batch size of $1$ to $3$. The generator also performs random shuffling of the dataset at the beginning of each epoch\footnote{The epoch-wise random shuffling strategy is also adopted from the YouTube tutorial series by Dr.\ Sreenivas Bhattiprolu (``Digital Srini'' on YouTube).}.
 
-For training and development, we utilized multiple GPUs depending on availability, including RTX 3060 Ti Mobile (8 GB VRAM), Titan X Pascal (12 GB VRAM), Quadro P5000 (16 GB VRAM) and Tesla T4 GPU on Google Colab(16GB VRAM). Due to the limitations of the older Quadro P5000 architecture, we faced some problems in handling the computational demands of 3D convolutions. To mitigate memory constraints across all devices, we adopted mixed precision training, which reduces tensor size and thereby alleviates VRAM usage. Even with this optimization, the maximum feasible batch size across all GPUs was limited to 2, the 3060 Ti Mobile had to use a batch size of 1. Approximate GPU VRAM Usage is $\sim11$ GiB for a batch Size of 2 and $\sim13.5GiB$ for a Batch Size of $3$. Average inference times per batch are $0.8853$s and $1.3295$s for a $2$-volume batch and a $3$-volume batch respectively; Average inference times per volume are $0.4427$s and $0.4432$s for a $2$-volume batch and a $3$-volume batch respectively\footnote{VRAM usage and inference times are reported from partial test runs on Google Colab using a Tesla T4 GPU.}.
+{\sloppy
+For training and development, we utilized multiple GPUs depending on availability, including RTX 3060 Ti Mobile (8 GB VRAM), Titan X Pascal (12 GB VRAM), Quadro P5000 (16 GB VRAM) and Tesla T4 GPU on Google Colab (16 GB VRAM). Due to the limitations of the older Quadro P5000 architecture, we faced some problems in handling the computational demands of 3D convolutions. To mitigate memory constraints across all devices, we adopted mixed precision training, which reduces tensor size and thereby alleviates VRAM usage. Even with this optimization, the maximum feasible batch size across all GPUs was limited to 2, the 3060 Ti Mobile had to use a batch size of 1. Approximate GPU VRAM Usage is $\sim11$ GiB for a batch Size of 2 and $\sim13.5$~GiB for a Batch Size of $3$. Average inference times per batch are $0.8853$s and $1.3295$s for a $2$-volume batch and a $3$-volume batch respectively; Average inference times per volume are $0.4427$s and $0.4432$s for a $2$-volume batch and a $3$-volume batch respectively\footnote{VRAM usage and inference times are reported from partial test runs on Google Colab using a Tesla T4 GPU.}.\par}
 
 The hyperparameters for the training are as reported below\footnote{Hyperparameters reported as per the final training run.}:
 \begin{itemize}
@@ -851,19 +852,19 @@ For qualitative assessment, representative segmentation results generated by the
 \begin{figure*}[!htbp]
     \centering
     \begin{tabular}{ccc}
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 1.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 28.png} \\
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 0.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 1.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 28.png} \\
         Example 1 & Example 2 & Example 3 \\
 
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 53.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 57.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 59.png} \\
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 53.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 57.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 59.png} \\
         Example 4 & Example 5 & Example 6 \\
 
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 63.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 66.png} &
-        \includegraphics[width=0.31\textwidth]{figs/Conture of Tumor Over Flair images/Image 74.png} \\
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 63.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 66.png} &
+        \includegraphics[width=0.30\textwidth]{figs/Conture of Tumor Over Flair images/Image 74.png} \\
         Example 7 & Example 8 & Example 9\\
     \end{tabular}
     \caption{Ground Truth region Conture vs Predicted region Conture for different channels (Ground Truth Represented as Green and Prediction Represented as Red)}
@@ -927,7 +928,7 @@ One notable advantage of the proposed model is its computational efficiency is t
 
 As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (61.98M) and UNETR (102.5M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
 
-The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs~count of our model with others we get the following in Table~\ref{tab:complexity}.
+{\sloppy The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others we get the following in Table~\ref{tab:complexity}.\par}
 
 \begin{table*}[!htbp]
     \caption{Comparison of model complexity in terms of trainable parameters and FLOPs.}
@@ -958,7 +959,7 @@ Reported as per Mingzhe Zhou et al., we can see this model might not rank among 
 
 \section{Conclusion}
 
-This proposed model performs on par with, and in some cases exceeds, established image segmentation architectures, managing to compete with popular Transformer based networks, while being much lightweight than most of them. In this paper, we have not shown justifications for many of the improvements that we have made. For example we have not shown any evidence that our adaptive loss function works better than other mainstream loss functions like Tversky or Boundary loss; or even if it works better than Dice Loss or Categorical Focal Loss stand alone. Also in case of our DRIC block, we have not formally tested if all components of that block is strictly necessary, or how it performs compared to already available/popular Dense, Residual, or Inception block. These components of  the architecture have been decided by theoretical understanding and preliminary small-scale testing. We have failed to show any justification for them, mostly due to a lack of equipment and a lack of scope. Also we have not tested other criteria that could theoretically have boosted our model performance; for example other validation strategies like cross-validation or hold-out, data augmentation strategies, Other normalization approach, etc. We intend to test experiment with them in future expansion of the work, if the scope permits.
+{\sloppy This proposed model performs on par with, and in some cases exceeds, established image segmentation architectures, managing to compete with popular Transformer based networks, while being much lightweight than most of them. In this paper, we have not shown justifications for many of the improvements that we have made. For example we have not shown any evidence that our adaptive loss function works better than other mainstream loss functions like Tversky or Boundary loss; or even if it works better than Dice Loss or Categorical Focal Loss stand alone. Also in case of our DRIC block, we have not formally tested if all components of that block is strictly necessary, or how it performs compared to already available/popular Dense, Residual, or Inception block. These components of  the architecture have been decided by theoretical understanding and preliminary small-scale testing. We have failed to show any justification for them, mostly due to a lack of equipment and a lack of scope. Also we have not tested other criteria that could theoretically have boosted our model performance; for example other validation strategies like cross-validation or hold-out, data augmentation strategies, Other normalization approach, etc. We intend to test experiment with them in future expansion of the work, if the scope permits.\par}
 
 %There are various bibliography styles available. You can select the
 %style of your choice in the preamble of this document. These styles are

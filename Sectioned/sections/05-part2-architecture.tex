@@ -78,7 +78,7 @@ At each encoder stage $l\in\{1,2,3,4\}$, the network performs three sequential o
     \end{itemize}
     \item Downsampling:
     \begin{itemize}
-        \item The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l,\allowbreak\, p = 2)$, where $p$ represents the scaling factor.
+        \item {\sloppy The feature map is halved in each spatial dimension using 3D max pooling: $X_l = MaxPool3D(F_l, p = 2)$, where $p$ represents the scaling factor.\par}
     \end{itemize}
     \item Skip Connection Storage:
     \begin{itemize}
