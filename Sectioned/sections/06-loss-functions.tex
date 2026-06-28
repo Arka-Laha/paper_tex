@@ -23,7 +23,7 @@ The Dice coefficient directly measures the overlap between the predicted and gro
     \label{Dice Loss}
 \end{equation}
 where $y_{i,c} \in \{0,1\}$ denotes the ground truth one-hot encoded label for voxel $i$ in class $c$, $\hat{y}_{i,c}$ represents the predicted softmax probability, $N$ is the total number of voxels, $C$ is the number of classes, and $\epsilon$ is a small constant added for numerical stability.
-\\
+
 Dice Loss encourages overlap between predicted and ground-truth masks, and is particularly effective at handling class~imbalance.
 
 \subsection{Categorical Focal Loss}
