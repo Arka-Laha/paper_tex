@@ -326,14 +326,14 @@ The first step in improving the classical U-Net architecture is to replace the $
     % Legend Box
     \fbox{
     \begin{tabular}{cl|cl|cl}
-        \includegraphics[width=0.018\textwidth]{figs/Label1/1.png}
-        & \hspace{-1.3em}\scriptsize Concatenation
+        \includegraphics[width=0.04\textwidth]{figs/Label1/1.png}
+        & \hspace{-0.7em}\scriptsize Concatenation
         &
-        \includegraphics[width=0.018\textwidth]{figs/Label1/6.png}
-        & \hspace{-1.3em}\scriptsize Dropout
+        \includegraphics[width=0.03\textwidth]{figs/Label1/6.png}
+        & \hspace{-0.7em}\scriptsize Dropout
         &
-        \includegraphics[width=0.018\textwidth]{figs/Label1/5.png}
-        & \hspace{-1.3em}\scriptsize Add
+        \includegraphics[width=0.04\textwidth]{figs/Label1/5.png}
+        & \hspace{-0.7em}\scriptsize Add
     \end{tabular}
     }
 
@@ -606,7 +606,7 @@ $X_0 = \{X^{(1)} X^{(2)} X^{(3)} X^{(4)}\} - \{X^{(1)}\}\in \mathbb{R}^{(H\times
         & \scriptsize Average-pooled by factor of $n$
         &
         \includegraphics[width=0.030\textwidth]{figs/Label1/11.png}
-        & \scriptsize Conc 1x1x1 with sigmoid
+        & \scriptsize Conv 1x1x1 with sigmoid
     \end{tabular}
     }
 
