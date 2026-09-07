@@ -283,7 +283,7 @@ Despite the promising results reported by existing CAD systems and deep learning
 
 \subsection{Motivation}
 
-Brain MRI data are inherently volumetric, which makes the exploitation of three-dimensional spatial information crucial for accurate tumor delineation. Consequently, 3D convolutional neural networks have emerged as a promising paradigm for brain tumor segmentation, as they can effectively model inter-slice contextual relationships and complex tumor morphology. Recent studies have demonstrated the potential of 3D deep learning architectures for improving segmentation performance on benchmark datasets such as BraTS ~\cite{abidin2024recent,krishnapriya2023survey,zhang2024etunet}. [To add more related works under this section, followed by Proposed Framework] Inspired by these developments, the present work explores a 3D deep learning framework for robust and computationally efficient brain tumor segmentation.
+Brain MRI data are inherently volumetric, which makes the exploitation of three-dimensional spatial information crucial for accurate tumor delineation. Consequently, 3D convolutional neural networks have emerged as a promising paradigm for brain tumor segmentation, as they can effectively model inter-slice contextual relationships and complex tumor morphology. Recent studies have demonstrated the potential of 3D deep learning architectures for improving segmentation performance on benchmark datasets such as BraTS \cite{abidin2024recent,krishnapriya2023survey,zhang2024etunet}. Liao et al. ~\cite{liao2024lightm} introduced LightM-UNet, a lightweight Mamba-based UNet architecture that replaces conventional CNN and Transformer modules with Residual Vision Mamba layers to capture long-range spatial dependencies with linear computational complexity. Experimental results on real-world 2D and 3D medical image segmentation datasets demonstrated superior segmentation performance while reducing parameter count and computational cost. Peiris et al. ~\cite{peiris2021volumetric} introduced a U-shaped volumetric Transformer that combines local and global feature learning through parallel shifted-window attention for 3D medical image segmentation. Evaluation on the BraTS 2021 and Medical Segmentation Decathlon (Pancreas and Liver) datasets demonstrated accurate segmentation along with improved cross-dataset generalization and robustness to data corruption. Wang et al. ~\cite{wang2021transbts} proposed TransBTS, which integrates a 3D CNN encoder with a Transformer module to jointly capture local volumetric features and long-range contextual information for brain tumor segmentation from 3D MRI scans. Experimental results on the BraTS 2019 and BraTS 2020 datasets demonstrate that the hybrid architecture provides competitive or state-of-the-art segmentation accuracy while effectively modeling both local and global image representations. \c{C}i\c{c}ek et al. ~\cite{cciccek20163d} demonstrated the effectiveness of 3D U-Net, an extended version of the conventional U-Net architecture adapted to volumetric data by replacing 2D operations with their 3D counterparts, enabling dense segmentation from sparsely annotated volumes in both semi-automated and fully automated settings, with successful results on the challenging Xenopus kidney dataset. Isensee et al. ~\cite{isensee2021nnu} demonstrated the effectiveness of nnU-Net, a self-configuring framework that automatically adapts preprocessing, network architecture, training, and post-processing to different biomedical image segmentation tasks, achieving strong performance across 23 public datasets. Building on this framework, Isensee et al. ~\cite{isensee2023extending} further enhanced nnU-Net through hyperparameter refinement, residual connections, and task-specific post-processing, achieving first-place performance in the AMOS-2022 challenge for both CT and CT+MRI multi-organ segmentation. Zhou et al. ~\cite{zhou2023nnformer} presented nnFormer, a 3D Transformer-based framework that combines convolution and self-attention with local and global volumetric attention to learn contextual representations for medical image segmentation. The method also employs attention-based skip connections and demonstrated improved segmentation accuracy and computational efficiency over existing Transformer-based approaches and nnU-Net across three public datasets. Hatamizadeh et al. presented Swin UNETR ~\cite{hatamizadeh2021swin}, a hierarchical Transformer-based architecture that employs shifted-window self-attention to capture long-range contextual information and multiscale features for multimodal 3D brain tumor segmentation, achieving top-performing results in the BraTS 2021 challenge. They also developed UNETR ~\cite{hatamizadeh2022unetr}, which uses a Transformer encoder and a U-shaped decoder with multi-resolution skip connections to capture global contextual information, demonstrating state-of-the-art performance on the BTCV dataset and effective results on the Medical Segmentation Decathlon tasks. Vision Transformer-based models can capture long-range relationships and global contextual information, which are important for improving 3D medical image segmentation. Perera et al. ~\cite{perera2024segformer3d} presented SegFormer3D, a lightweight hierarchical Vision Transformer that captures multiscale global contextual information through an efficient attention mechanism and a simple all-MLP decoder for 3D medical image segmentation. Despite its compact design, the model achieved competitive segmentation results on the Synapse, BraTS, and ACDC datasets, while using 33× fewer parameters and requiring 13× lower computational cost than larger state-of-the-art architectures. Overall, the above studies demonstrate the potential of the CNN-, Transformer, and hybrid architectures for volumetric segmentation, motivating the present work toward developing a lightweight 3D U-Net-based framework for robust brain tumor segmentation with an effective balance between segmentation accuracy and computational efficiency.
 
 \subsection{Contribution}
 
@@ -817,26 +817,26 @@ For the loss function, we used an adaptive combination of Dice Loss and Categori
 \begin{figure*}[!htbp]
     \centering
     \begin{tabular}{ccc}
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Loss vs Validation Loss.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Accuracy vs Validation Accuracy.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Mean IoU vs Validation Mean IoU.jpg} \\
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Loss vs Validation Loss.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Accuracy vs Validation Accuracy.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Mean IoU vs Validation Mean IoU.png} \\
         (a) Loss Graph & (b) Accuracy Graph & (c) Mean IoU Graph \\[6pt]
 
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training IoU vs Validation IoU.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training F1 Score vs Validation F1 Score.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Precision vs Validation Precision.jpg} \\
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training IoU vs Validation IoU.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training F1 Score vs Validation F1 Score.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Precision vs Validation Precision.png} \\
         (d) IoU Graph & (e) F1 Score Graph & (f) Precision Graph \\[6pt]
 
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Recall vs Validation Recall.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (TC) Score vs Validation Dice (TC) Score.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (WT) Score vs Validation Dice (WT) Score.jpg} \\
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Recall vs Validation Recall.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (TC) Score vs Validation Dice (TC) Score.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (WT) Score vs Validation Dice (WT) Score.png} \\
         (g) Recall Graph & (h) TC Dice Score Graph & (i) WT Dice Score Graph \\[6pt]
 
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (ET) Score vs Validation Dice (ET) Score.jpg} &
-        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Macro Dice Score vs Validation Macro Dice Score.jpg} & \\
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Dice (ET) Score vs Validation Dice (ET) Score.png} &
+        \includegraphics[width=0.3\textwidth]{figs/Project Charts/Training Macro Dice Score vs Validation Macro Dice Score.png} & \\
         (j) ET Dice Score Graph & (k) Macro Dice Score Graph &
     \end{tabular}
-    \caption{Performance graphs across different evaluation metrics (Training represented as Blue and Validation represented as Red).}
+    \caption{Performance graphs across different evaluation metrics (Training represented as Blue and Validation represented as Red. The translucent straight lines are the trend line for each graph).}
     \label{fig:5x2_graphs}
 \end{figure*}
 
@@ -886,10 +886,10 @@ The proposed model is evaluated against other popular network architectures to a
         \toprule
         Model (Dataset / Year) & WT Dice & TC Dice & ET Dice & Source \\
         \midrule
-        Myronenko (BraTS 2018)                    & 0.884 & 0.815 & 0.766 & BraTS 2018 Test \\
-        Two-Stage Cascaded U-Net (BraTS 2019)      & 0.888 & 0.837 & 0.833 & BraTS 2019 Test \\
-        nnU-Net (BraTS 2020)                       & 0.890 & 0.851 & 0.820 & BraTS 2020 Test \\
-        TransBTS (2021)                            & 0.900 & 0.819 & 0.789 & Reported (TTA)  \\
+        Myronenko (BraTS 2018)\cite{myronenko20183dmribraintumor}                    & 0.884 & 0.815 & 0.766 & BraTS 2018 Test \\
+        Two-Stage Cascaded U-Net (BraTS 2019)\cite{Two-Stage_Cascaded_U-Net}      & 0.888 & 0.837 & 0.833 & BraTS 2019 Test \\
+        nnU-Net (BraTS 2020)\cite{isensee2020nnunetbraintumorsegmentation}                    & 0.890 & 0.851 & 0.820 & BraTS 2020 Test \\
+        TransBTS (2021)\cite{wang2021transbts}                            & 0.900 & 0.819 & 0.789 & Reported (TTA)  \\
         Swin UNETR (2022)                          & 0.926 & 0.885 & 0.858 & Validation      \\
         SwinBTS (2022)                             & 0.918 & 0.848 & 0.832 & Reported        \\
         BiTr-UNet (BraTS 2021)                     & 0.926 & 0.935 & 0.887 & BraTS 2021 Test \\
@@ -908,52 +908,41 @@ On validation, our model ranks among top performers for TC and ET, with Dice sco
 One notable advantage of the proposed model is its computational efficiency is that it being light-weight. When we compare the parameter count of our model with others we observe the following in Table \ref{tab:parameter_comparison}.
 
 \begin{table*}[!htbp]
-    \caption{Comparison of total trainable parameters across recent 3D segmentation models.}
+    \caption{Comparison of total trainable parameters and FLOPs across recent 3D segmentation models. (Numbers are reported as per \cite{SlimUNETR})}
     \label{tab:parameter_comparison}
     \centering
     \begin{tabular}{lcc}
         \toprule
-        Model (Ref.)                           & Total Parameters (M) & Remarks \\
+        Model (Ref.)                           & FLOPs (G) & Total Parameters (M) \\
         \midrule
-        \textbf{Our Model (this work)}         & \textbf{4.01} & All parameters trainable  \\
-        SegFormer3D (2024)                     & 4.50          & Lightweight transformer   \\
-        LightM-UNet                            & 5.02          & Lightweight baseline      \\
-        3D U-Net                               & 16.21         & Canonical 3D configuration \\
-        VT-UNet-B                              & 20.80         & Transformer-based encoder \\
-        TransBTS (2021)                        & 32.99         & CNN + Transformer hybrid  \\
-        nnU-Net (default)                      & $\sim$30.00   & Dataset-dependent configuration \\
-        nnFormer                               & 39.70         & Hierarchical transformer  \\
-        Swin UNETR (2022)                      & 61.98         & Swin transformer hybrid   \\
-        UNETR (2021)                           & 102.50        & ViT-based encoder         \\
+        \textbf{Our Model (this work)}         & \textbf{201.153318912} & \textbf{4.008868} \\
+        TransVW                         & 2381.3  & 19.13  \\
+        UNet3D                          & 2382.1  & 19.24  \\
+        E1D3 UNet                       & 946.23  & 34.91  \\
+        VNet                                    & 780.1   & 45.66  \\
+        nn-UNet\cite{isensee2021nnu}                                 & 446.27  & 13.82  \\
+        SegResNet                               & 330.23  & 10.64  \\
+        AttUNet                                 & 166.52  & 2.74   \\
+        Swin UNETR\cite{hatamizadeh2021swin}    & 793.92  & 61.99  \\
+        TransBTS\cite{wang2021transbts}        & 263.82  & 30.61  \\
+        HDC-Net\cite{HDCNet}            & 25.62   & 0.29   \\
+        TransUNet                       & 246.41  & 187.3  \\
+        UNETR\cite{hatamizadeh2022unetr}                           & 203.21  & 102.37 \\
+        UNETR++                         & 139.44  & 20.12  \\
+        VitAutoEnc                      & 125.66  & 183.41 \\
+        VIT3D                           & 93.78   & 183.01 \\
+        Slim UNETR\cite{SlimUNETR}      & 12.42   & 1.79 \\
         \bottomrule
     \end{tabular}
 \end{table*}
 
-As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (61.98M) and UNETR (102.5M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
+As shown in Table~\ref{tab:parameter_comparison}, the proposed model (4.01M parameters) is substantially lighter than transformer-based architectures such as Swin UNETR (\~62M) and UNETR (\~102M). The proposed architecture achieves competitive segmentation performance while maintaining significantly lower computational complexity compared to contemporary transformer-based methods.
 
-{\sloppy The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others we get the following in Table~\ref{tab:complexity}.\par}
+{\sloppy The proposed model can be categorized among lightweight segmentation architectures. Even if we compare the FLOPs count of our model with others, we get the following in Table~\ref{tab:parameter_comparison}.\par}
 
-\begin{table*}[!htbp]
-    \caption{Comparison of model complexity in terms of trainable parameters and FLOPs.}
-    \label{tab:complexity}
-    \centering
-    \begin{tabular}{lcc}
-        \toprule
-        Methods         & Parameters (M) & FLOPs (G) \\
-        \midrule
-        3D U-Net        & 7.74   & 586.71  \\
-        Attention U-Net & 17.12  & 588.26  \\
-        VNet            & 7.03   & 769.30  \\
-        Swin-Unet       & 27.15  & 250.88  \\
-        HDC-Net         & 0.29   & 25.62   \\
-        TransUNet       & 105.18 & 1205.76 \\
-        TransBTS        & 30.61  & 263.82  \\
-        MCSLF-Net       & 24.49  & 142.43  \\
-        \bottomrule
-    \end{tabular}
-\end{table*}
 
-Reported as per Mingzhe Zhou et al., we can see this model might not rank among the Ultra-Lightweight models like HDC-Net. But we can comfortably place it in the category of light weight model.
+
+Reported as per Mingzhe Zhou et al. \cite{zhou2025mcslf}, we can see this model might not rank among the Ultra-Lightweight models like HDC-Net, Slim UNETR\cite{SlimUNETR} etc. But we can comfortably place it in the category of light weight model.
 
 
 %% ============================================================
